@@ -26,22 +26,16 @@ export const ResourceCard = ({ title, summary, content, link }: ResourceCardProp
 
       {isExpanded && (
         <div className="mt-4 pt-4 border-t border-border animate-slide-in">
-        <p className="text-sm text-foreground mb-4">{content}</p>
-      {link && (
-        <Button variant="outline" size="sm" asChild>
-        <a
-          href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3255198/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn More
-          <ExternalLink className="ml-2 h-3 w-3" />
-        </a>
-      </Button>
-    )}
-  </div>
-)}
-
+          <p className="text-sm text-foreground mb-4">{content}</p>
+          {link && (
+            <Button variant="outline" size="sm" asChild>
+              <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3255198/" target="_blank" rel="noopener noreferrer">
+                Learn More
+                <ExternalLink className="ml-2 h-3 w-3" />
+              </a>
+            </Button>
+          )}
+        </div>
       )}
     </Card>
   );
