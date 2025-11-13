@@ -5,6 +5,7 @@ import { StatusBar } from "@/components/StatusBar";
 import { RecommendationCard } from "@/components/RecommendationCard";
 import { ResourceCard } from "@/components/ResourceCard";
 import { Button } from "@/components/ui/button";
+import { useTodo } from "@/contexts/TodoContext";
 import {
   Heart,
   Sun,
@@ -26,6 +27,7 @@ const generateSparkline = () => {
 
 const Index = () => {
   const [isConnected, setIsConnected] = useState(true);
+  const { addTodo } = useTodo();
   const [vitals, setVitals] = useState({
     bpm: 76,
     light: 350,
@@ -148,7 +150,14 @@ const Index = () => {
               title="High Heart Rate Detected"
               description="Your heart rate is elevated. Try a breathing exercise to help you relax."
               actionLabel="Add to My To-Do List"
-              onAction={() => toast.success("Added to your to-do list")}
+              onAction={() => {
+                addTodo(
+                  "High Heart Rate Detected",
+                  "Your heart rate is elevated. Try a breathing exercise to help you relax.",
+                  "medium"
+                );
+                toast.success("Added to your to-do list");
+              }}
               priority="medium"
             />
             <RecommendationCard
@@ -156,7 +165,14 @@ const Index = () => {
               title="Hydration Reminder"
               description="It's been 2 hours since you last had fluids. Remember to stay hydrated."
               actionLabel="Add to My To-Do List"
-              onAction={() => toast.success("Added to your to-do list")}
+              onAction={() => {
+                addTodo(
+                  "Hydration Reminder",
+                  "It's been 2 hours since you last had fluids. Remember to stay hydrated.",
+                  "low"
+                );
+                toast.success("Added to your to-do list");
+              }}
               priority="low"
             />
           </div>

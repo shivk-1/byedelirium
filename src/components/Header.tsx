@@ -1,4 +1,5 @@
 import { Activity } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
 
 interface HeaderProps {
@@ -6,9 +7,23 @@ interface HeaderProps {
 }
 
 export const Header = ({ isConnected }: HeaderProps) => {
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    element?.scrollIntoView({ behavior: "smooth" });
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleSectionClick = (sectionId: string) => {
+    if (location.pathname !== "/") {
+      // Navigate to home page with hash
+      navigate(`/#${sectionId}`);
+      // Wait for navigation, then scroll
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        element?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } else {
+      // Already on home page, just scroll
+      const element = document.getElementById(sectionId);
+      element?.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
@@ -34,14 +49,21 @@ export const Header = ({ isConnected }: HeaderProps) => {
           >
             Exercises
           </NavLink>
+          <NavLink
+            to="/todo"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            activeClassName="text-foreground"
+          >
+            To-Do List
+          </NavLink>
           <button
-            onClick={() => scrollToSection("resources")}
+            onClick={() => handleSectionClick("resources")}
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             Resources
           </button>
           <button
-            onClick={() => scrollToSection("help")}
+            onClick={() => handleSectionClick("help")}
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             Get Help
