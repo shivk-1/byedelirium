@@ -5,6 +5,8 @@ import { StatusBar } from "@/components/StatusBar";
 import { BreathingExercise } from "@/components/BreathingExercise";
 import { RecommendationCard } from "@/components/RecommendationCard";
 import { ResourceCard } from "@/components/ResourceCard";
+import { SudokuGame } from "@/components/SudokuGame";
+import { WordSearchGame } from "@/components/WordSearchGame";
 import { Button } from "@/components/ui/button";
 import {
   Heart,
@@ -163,6 +165,14 @@ const Index = () => {
                 onAction={() => toast.success("Hydration reminder set")}
                 priority="low"
               />
+            </div>
+          </div>
+
+          <div className="mt-8">
+            <h3 className="text-2xl font-bold text-foreground mb-4">Mind Exercises</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <SudokuGame />
+              <WordSearchGame />
             </div>
           </div>
         </section>
