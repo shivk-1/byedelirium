@@ -17,17 +17,8 @@ export const ResourceCard = ({ title, summary, content, link }: ResourceCardProp
     <Card className="p-5 shadow-card hover:shadow-elevated transition-all border-border">
       <div className="flex items-start justify-between mb-3">
         <h4 className="font-semibold text-foreground">{title}</h4>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="h-8 w-8 p-0"
-        >
-          {isExpanded ? (
-            <ChevronUp className="h-4 w-4" />
-          ) : (
-            <ChevronDown className="h-4 w-4" />
-          )}
+        <Button variant="ghost" size="sm" onClick={() => setIsExpanded(!isExpanded)} className="h-8 w-8 p-0">
+          {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </Button>
       </div>
 
@@ -38,7 +29,7 @@ export const ResourceCard = ({ title, summary, content, link }: ResourceCardProp
           <p className="text-sm text-foreground mb-4">{content}</p>
           {link && (
             <Button variant="outline" size="sm" asChild>
-              <a href={https://pmc.ncbi.nlm.nih.gov/articles/PMC3255198/} target="_blank" rel="noopener noreferrer">
+              <a href={"https://pmc.ncbi.nlm.nih.gov/articles/PMC3255198/"} target="_blank" rel="noopener noreferrer">
                 Learn More
                 <ExternalLink className="ml-2 h-3 w-3" />
               </a>
