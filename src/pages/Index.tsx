@@ -2,11 +2,8 @@ import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { VitalCard } from "@/components/VitalCard";
 import { StatusBar } from "@/components/StatusBar";
-import { BreathingExercise } from "@/components/BreathingExercise";
 import { RecommendationCard } from "@/components/RecommendationCard";
 import { ResourceCard } from "@/components/ResourceCard";
-import { SudokuGame } from "@/components/SudokuGame";
-import { WordSearchGame } from "@/components/WordSearchGame";
 import { Button } from "@/components/ui/button";
 import {
   Heart,
@@ -143,37 +140,25 @@ const Index = () => {
 
         {/* Recommendations */}
         <section id="recommendations" className="space-y-6">
-          <h2 className="text-3xl font-bold text-foreground">Smart Recommendations</h2>
+          <h2 className="text-3xl font-bold text-foreground">My Health Reminders</h2>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <BreathingExercise />
-            
-            <div className="space-y-4">
-              <RecommendationCard
-                icon={Wind}
-                title="High Heart Rate Detected"
-                description="Patient's heart rate is elevated. Consider a breathing exercise to help calm down."
-                actionLabel="Start Breathing Exercise"
-                onAction={() => toast.success("Breathing exercise suggested to patient")}
-                priority="medium"
-              />
-              <RecommendationCard
-                icon={Droplets}
-                title="Hydration Reminder"
-                description="It's been 2 hours since last fluid intake. Ensure patient stays hydrated."
-                actionLabel="Set Reminder"
-                onAction={() => toast.success("Hydration reminder set")}
-                priority="low"
-              />
-            </div>
-          </div>
-
-          <div className="mt-8">
-            <h3 className="text-2xl font-bold text-foreground mb-4">Mind Exercises</h3>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <SudokuGame />
-              <WordSearchGame />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <RecommendationCard
+              icon={Wind}
+              title="High Heart Rate Detected"
+              description="Your heart rate is elevated. Try a breathing exercise to help you relax."
+              actionLabel="Add to My To-Do List"
+              onAction={() => toast.success("Added to your to-do list")}
+              priority="medium"
+            />
+            <RecommendationCard
+              icon={Droplets}
+              title="Hydration Reminder"
+              description="It's been 2 hours since you last had fluids. Remember to stay hydrated."
+              actionLabel="Add to My To-Do List"
+              onAction={() => toast.success("Added to your to-do list")}
+              priority="low"
+            />
           </div>
         </section>
 
@@ -208,25 +193,25 @@ const Index = () => {
 
         {/* Get Help */}
         <section id="help" className="space-y-6">
-          <h2 className="text-3xl font-bold text-foreground">Get Immediate Help</h2>
+          <h2 className="text-3xl font-bold text-foreground">Need Help?</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-8 rounded-lg border-2 border-primary bg-gradient-calm shadow-elevated">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-8 rounded-lg border-2 border-primary bg-primary/5 shadow-elevated">
               <Phone className="h-12 w-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold text-foreground mb-2">Call Nurse</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-2">Call for Help</h3>
               <p className="text-muted-foreground mb-4">
-                Connect directly with nursing staff for immediate assistance.
+                Need assistance? Reach out to nursing staff right away.
               </p>
-              <Button className="w-full" onClick={() => toast.success("Nurse has been notified")}>
+              <Button className="w-full" onClick={() => toast.success("Help is on the way")}>
                 Call Now
               </Button>
             </div>
 
             <div className="p-8 rounded-lg border-2 border-critical bg-critical/5 shadow-elevated">
               <AlertCircle className="h-12 w-12 text-critical mb-4" />
-              <h3 className="text-xl font-semibold text-foreground mb-2">Emergency Alert</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-2">Emergency</h3>
               <p className="text-muted-foreground mb-4">
-                Send urgent alert to medical staff if patient condition is critical.
+                In case of emergency, send an immediate alert.
               </p>
               <Button variant="destructive" className="w-full" onClick={handleEmergency}>
                 Send Emergency Alert

@@ -1,4 +1,5 @@
 import { Activity } from "lucide-react";
+import { NavLink } from "@/components/NavLink";
 
 interface HeaderProps {
   isConnected: boolean;
@@ -19,18 +20,20 @@ export const Header = ({ isConnected }: HeaderProps) => {
         </div>
 
         <nav className="hidden md:flex items-center gap-6">
-          <button
-            onClick={() => scrollToSection("vitals")}
+          <NavLink
+            to="/"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            activeClassName="text-foreground"
           >
             Home
-          </button>
-          <button
-            onClick={() => scrollToSection("recommendations")}
+          </NavLink>
+          <NavLink
+            to="/exercises"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            activeClassName="text-foreground"
           >
-            Recommendations
-          </button>
+            Exercises
+          </NavLink>
           <button
             onClick={() => scrollToSection("resources")}
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
