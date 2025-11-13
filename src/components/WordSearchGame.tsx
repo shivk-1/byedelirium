@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
@@ -8,7 +8,7 @@ const grid = [
   ['R', 'E', 'L', 'A', 'X', 'T', 'H', 'I', 'N', 'K'],
   ['M', 'I', 'N', 'D', 'F', 'U', 'L', 'P', 'E', 'A'],
   ['C', 'A', 'L', 'M', 'G', 'H', 'E', 'A', 'C', 'L'],
-  ['B', 'R', 'E', 'A', 'T', 'H', 'E', 'L', 'E', 'M'],
+  ['B', 'R', 'E', 'A', 'T', 'H', 'E', 'L', 'T', 'M'],
   ['F', 'O', 'C', 'U', 'S', 'K', 'J', 'T', 'A', 'N'],
   ['S', 'L', 'E', 'E', 'P', 'M', 'N', 'H', 'R', 'U'],
   ['T', 'R', 'A', 'N', 'Q', 'U', 'I', 'L', 'I', 'R'],
@@ -19,21 +19,101 @@ const grid = [
 
 const words = ['RELAX', 'MINDFUL', 'CALM', 'BREATHE', 'FOCUS', 'SLEEP', 'TRANQUIL', 'MEDITATE', 'WELLNESS', 'RESTORE', 'HEALTH', 'PEACE', 'CLARITY', 'THINK', 'REST'];
 
+interface Cell {
+  row: number;
+  col: number;
+}
+
 export const WordSearchGame = () => {
   const [foundWords, setFoundWords] = useState<string[]>([]);
-  const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
+  const [selectedCells, setSelectedCells] = useState<Cell[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const [shake, setShake] = useState(false);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const handleReset = () => {
     setFoundWords([]);
-    setSelectedCells(new Set());
+    setSelectedCells([]);
     toast.success("Word search reset");
   };
 
-  const handleWordClick = (word: string) => {
-    if (!foundWords.includes(word)) {
-      setFoundWords([...foundWords, word]);
-      toast.success(`Found: ${word}`);
+  const isCellSelected = (row: number, col: number) => {
+    return selectedCells.some(cell => cell.row === row && cell.col === col);
+  };
+
+  const getSelectedWord = () => {
+    return selectedCells.map(cell => grid[cell.row][cell.col]).join('');
+  };
+
+  const handleMouseDown = (row: number, col: number) => {
+    setIsDragging(true);
+    setSelectedCells([{ row, col }]);
+  };
+
+  const handleMouseEnter = (row: number, col: number) => {
+    if (!isDragging) return;
+
+    const lastCell = selectedCells[selectedCells.length - 1];
+    if (!lastCell) return;
+
+    // Check if this is a valid continuation (horizontal, vertical, or diagonal)
+    const rowDiff = Math.abs(row - selectedCells[0].row);
+    const colDiff = Math.abs(col - selectedCells[0].col);
+    
+    // Must be in a straight line (same row, same col, or diagonal)
+    const isHorizontal = rowDiff === 0;
+    const isVertical = colDiff === 0;
+    const isDiagonal = rowDiff === colDiff;
+    
+    if (isHorizontal || isVertical || isDiagonal) {
+      // Don't add if already selected
+      if (!isCellSelected(row, col)) {
+        setSelectedCells(prev => [...prev, { row, col }]);
+      }
     }
+  };
+
+  const handleMouseUp = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+
+    const selectedWord = getSelectedWord();
+    
+    // Check if the word exists in our word list
+    if (words.includes(selectedWord) && !foundWords.includes(selectedWord)) {
+      setFoundWords(prev => [...prev, selectedWord]);
+      toast.success(`Word found: ${selectedWord}!`);
+    } else if (selectedCells.length > 1) {
+      // Wrong word - shake animation
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+    }
+
+    setSelectedCells([]);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent, row: number, col: number) => {
+    e.preventDefault();
+    handleMouseDown(row, col);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault();
+    if (!isDragging || !gridRef.current) return;
+
+    const touch = e.touches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+    
+    if (element && element.hasAttribute('data-cell')) {
+      const row = parseInt(element.getAttribute('data-row') || '0');
+      const col = parseInt(element.getAttribute('data-col') || '0');
+      handleMouseEnter(row, col);
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    e.preventDefault();
+    handleMouseUp();
   };
 
   return (
@@ -46,16 +126,39 @@ export const WordSearchGame = () => {
       </div>
 
       <div className="mb-4">
-        <div className="grid grid-cols-10 gap-1 w-fit mx-auto">
+        <div 
+          ref={gridRef}
+          className={`grid grid-cols-10 gap-1 w-fit mx-auto select-none ${shake ? 'animate-shake' : ''}`}
+          onMouseLeave={handleMouseUp}
+        >
           {grid.map((row, rowIndex) => (
-            row.map((letter, colIndex) => (
-              <div
-                key={`${rowIndex}-${colIndex}`}
-                className="w-8 h-8 flex items-center justify-center bg-muted text-foreground text-sm font-semibold rounded border border-border/50"
-              >
-                {letter}
-              </div>
-            ))
+            row.map((letter, colIndex) => {
+              const isSelected = isCellSelected(rowIndex, colIndex);
+              
+              return (
+                <div
+                  key={`${rowIndex}-${colIndex}`}
+                  data-cell="true"
+                  data-row={rowIndex}
+                  data-col={colIndex}
+                  onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
+                  onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
+                  onMouseUp={handleMouseUp}
+                  onTouchStart={(e) => handleTouchStart(e, rowIndex, colIndex)}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                  className={`
+                    w-8 h-8 flex items-center justify-center text-sm font-semibold rounded border cursor-pointer transition-all
+                    ${isSelected 
+                      ? 'bg-primary text-primary-foreground border-primary scale-110' 
+                      : 'bg-muted text-foreground border-border/50 hover:bg-accent'
+                    }
+                  `}
+                >
+                  {letter}
+                </div>
+              );
+            })
           ))}
         </div>
       </div>
@@ -64,19 +167,18 @@ export const WordSearchGame = () => {
         <p className="text-sm text-muted-foreground mb-2">Find these words:</p>
         <div className="flex flex-wrap gap-2">
           {words.map((word) => (
-            <button
+            <div
               key={word}
-              onClick={() => handleWordClick(word)}
               className={`
                 px-3 py-1 text-xs rounded-full border transition-colors
                 ${foundWords.includes(word)
                   ? 'bg-success/20 border-success text-success-foreground line-through'
-                  : 'bg-background border-border text-foreground hover:bg-accent'
+                  : 'bg-background border-border text-foreground'
                 }
               `}
             >
               {word}
-            </button>
+            </div>
           ))}
         </div>
       </div>
@@ -92,6 +194,17 @@ export const WordSearchGame = () => {
           Found {foundWords.length} of {words.length} words
         </p>
       </div>
+
+      <style>{`
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+        .animate-shake {
+          animation: shake 0.3s ease-in-out;
+        }
+      `}</style>
     </Card>
   );
 };
