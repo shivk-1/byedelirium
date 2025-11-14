@@ -1,6 +1,7 @@
 import { Activity } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
+import { ProfileDropdown } from "@/components/ProfileDropdown";
 
 interface HeaderProps {
   isConnected: boolean;
@@ -70,15 +71,18 @@ export const Header = ({ isConnected }: HeaderProps) => {
           </button>
         </nav>
 
-        <div className="flex items-center gap-2">
-          <div
-            className={`h-2 w-2 rounded-full ${
-              isConnected ? "bg-success animate-pulse-soft" : "bg-critical"
-            }`}
-          />
-          <span className="text-sm text-muted-foreground">
-            {isConnected ? "Connected" : "Disconnected"}
-          </span>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div
+              className={`h-2 w-2 rounded-full ${
+                isConnected ? "bg-success animate-pulse-soft" : "bg-critical"
+              }`}
+            />
+            <span className="text-sm text-muted-foreground">
+              {isConnected ? "Connected" : "Disconnected"}
+            </span>
+          </div>
+          <ProfileDropdown />
         </div>
       </div>
     </header>
