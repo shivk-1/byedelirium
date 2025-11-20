@@ -19,15 +19,29 @@ def current():
         if not raw:
             return jsonify({"error": "no data"}), 400
 
-        data = json.loads(raw)
-        hr = int(data["heart_rate"])
-        temp = int(data["temperature"])
+        # Parse format: RAW: DATA:LIGHT=484,TEMP=27.94,SOUND=111,BPM=-999,SPO2=-999
+        if "DATA:" in raw:
+            raw = raw.split("DATA:")[1]
+        
+        parts = raw.split(",")
+        data = {}
+        for part in parts:
+            if "=" in part:
+                key, value = part.split("=")
+                data[key] = value
 
-        save_reading(hr, temp)
+        light = int(data.get("LIGHT", 0))
+        temp = float(data.get("TEMP", 0))
+        sound = int(data.get("SOUND", 0))
+        bpm = int(data.get("BPM", -999))
+
+        save_reading(light, temp, sound, bpm)
 
         return jsonify({
-            "heart_rate": hr,
-            "temperature": temp
+            "light": light,
+            "temperature": temp,
+            "sound": sound,
+            "bpm": bpm
         })
 
     except Exception as e:
@@ -38,7 +52,7 @@ def current():
 def history():
     rows = get_history(50)
     formatted = [
-        {"timestamp": r[0], "heart_rate": r[1], "temperature": r[2]}
+        {"timestamp": r[0], "light": r[1], "temperature": r[2], "sound": r[3], "bpm": r[4]}
         for r in rows
     ]
     return jsonify(formatted)
