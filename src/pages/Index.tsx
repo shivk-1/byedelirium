@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getCurrentReading } from "@/api/arduino";
 import { Header } from "@/components/Header";
 import { VitalCard } from "@/components/VitalCard";
 import { StatusBar } from "@/components/StatusBar";
@@ -35,16 +36,23 @@ const Index = () => {
     temp: 23.5,
   });
 
-  // Simulate real-time data updates
+  // Fetch real-time Arduino data
   useEffect(() => {
-    const interval = setInterval(() => {
-      setVitals({
-        bpm: 70 + Math.random() * 20,
-        light: 300 + Math.random() * 400,
-        sound: 40 + Math.random() * 30,
-        temp: 22 + Math.random() * 4,
-      });
-    }, 3000);
+    const interval = setInterval(async () => {
+      try {
+        const data = await getCurrentReading();
+        if (!data.error) {
+          setVitals({
+            bpm: data.bpm === -999 ? vitals.bpm : data.bpm,
+            light: data.light,
+            sound: data.sound,
+            temp: data.temperature,
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch Arduino data:", error);
+      }
+    }, 2000);
 
     return () => clearInterval(interval);
   }, []);
